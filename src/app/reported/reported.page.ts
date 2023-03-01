@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { map, Observable } from 'rxjs';
+
+
+
 
 @Component({
   selector: 'app-reported',
@@ -7,9 +13,56 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReportedPage implements OnInit {
 
-  constructor() { }
-
-  ngOnInit() {
+ 
+ damageData:any;
+  constructor(private afs: AngularFirestore,    private storage: AngularFireStorage,private db: AngularFirestore,) { 
+   this. getDamageData();
   }
 
+  ngOnInit() {
+  
+  }
+
+  getDamageData() {
+    this.db.collection('demageData', ref => ref.where('status', '==', 'demaged'))
+      .valueChanges()
+      .subscribe(data =>{
+        
+      this.damageData=data;  
+      console.log(data);
+
+  }); 
+
+      
+  }
+
+
+  makeInProgress(id:any){
+
+    this.db.collection('demageData', ref => ref.where('id', '==', id))
+    .get()
+    .subscribe(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        doc.ref.update({ status: 'pending' });
+        this.getDamageData()
+      });
+    });
+  
+  
+  
+  }
+
+viewDescription(description:any){
+
+
+
+
+
 }
+  
+
+}
+ 
+
+
+
